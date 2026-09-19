@@ -1,0 +1,45 @@
+# Environment Variables & Secrets
+.env
+.env.local
+.env.*.local
+*.env
+
+# IDE & Editor Files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+*.iml
+
+# Node.js / Frontend
+node_modules/
+dist/
+dist-isolated/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Java / Spring Boot / Maven
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.rar
+.mvn/wrapper/maven-wrapper.jar
+.classpath
+.project
+.settings/
+bin/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+h2-data/
+
+# Logs
+logs/
+*.log
