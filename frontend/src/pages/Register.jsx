@@ -92,7 +92,7 @@ const Register = () => {
           msg = err.response.data.error;
         }
       } else if (err.message && (err.message.includes('Network Error') || err.message.includes('timeout'))) {
-        msg = 'Unable to connect to the backend API server. Please check your backend deployment status or backend URL configuration.';
+        msg = 'The backend server is waking up (Render free-tier cold start). Please wait 5 seconds and click Create Account again!';
       } else if (err.message) {
         msg = err.message;
       }

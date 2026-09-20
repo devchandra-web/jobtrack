@@ -27,12 +27,15 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const { config, response } = error;
+    if (config) {
+      config._retryCount = config._retryCount || 0;
 
-    // Retry once if Render backend is waking up (502/503/504 or network timeout)
-    if (!config._retry && (!response || [502, 503, 504].includes(response.status))) {
-      config._retry = true;
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      return api(config);
+      // Retry up to 3 times if Render backend is waking up (502/503/504 or network timeout)
+      if (config._retryCount < 3 && (!response || [502, 503, 504].includes(response?.status) || error.code === 'ECONNABORTED' || error.message?.includes('Network Error'))) {
+        config._retryCount += 1;
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        return api(config);
+      }
     }
 
     if (response && response.status === 401) {
