@@ -82,7 +82,20 @@ const Register = () => {
       }
     } catch (err) {
       console.error('Registration error', err);
-      const msg = err.response?.data?.message || err.response?.data?.error || 'Registration failed.';
+      let msg = 'Registration failed. Please try again.';
+      if (err.response?.data) {
+        if (err.response.data.errors && typeof err.response.data.errors === 'object') {
+          msg = Object.values(err.response.data.errors).join('. ');
+        } else if (err.response.data.message) {
+          msg = err.response.data.message;
+        } else if (err.response.data.error) {
+          msg = err.response.data.error;
+        }
+      } else if (err.message && (err.message.includes('Network Error') || err.message.includes('timeout'))) {
+        msg = 'Unable to connect to the backend API server. Please check your backend deployment status or backend URL configuration.';
+      } else if (err.message) {
+        msg = err.message;
+      }
       setError(msg);
     } finally {
       setIsSubmitting(false);
