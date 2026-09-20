@@ -88,13 +88,13 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)) // For H2 console
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/health").permitAll()
+                .requestMatchers("/", "/health", "/api", "/api/health").permitAll()
+                .requestMatchers("/api/auth/**", "/auth/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/jobs/**").permitAll()
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/recruiter/**").hasAnyRole("RECRUITER", "ADMIN")
-                .requestMatchers("/candidate/**").hasAnyRole("CANDIDATE", "ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/jobs/**", "/jobs/**").permitAll()
+                .requestMatchers("/api/admin/**", "/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/recruiter/**", "/recruiter/**").hasAnyRole("RECRUITER", "ADMIN")
+                .requestMatchers("/api/candidate/**", "/candidate/**").hasAnyRole("CANDIDATE", "ADMIN")
                 .anyRequest().authenticated()
             );
 
