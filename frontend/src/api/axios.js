@@ -4,6 +4,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api'
 
 const api = axios.create({
   baseURL: API_BASE_URL,
+  timeout: 45000, // 45s timeout to accommodate cloud cold-starts
   headers: {
     'Content-Type': 'application/json',
   },
@@ -21,11 +22,20 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor for automatic 401 handling
+// Response interceptor for automatic 401 handling & cold-start retry
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401) {
+  async (error) => {
+    const { config, response } = error;
+
+    // Retry once if Render backend is waking up (502/503/504 or network timeout)
+    if (!config._retry && (!response || [502, 503, 504].includes(response.status))) {
+      config._retry = true;
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      return api(config);
+    }
+
+    if (response && response.status === 401) {
       // Token expired or invalid
       const currentPath = window.location.pathname;
       if (currentPath !== '/login' && currentPath !== '/register') {
@@ -39,3 +49,4 @@ api.interceptors.response.use(
 );
 
 export default api;
+

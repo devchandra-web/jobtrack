@@ -11,7 +11,7 @@ services:
       - key: SPRING_PROFILES_ACTIVE
         value: prod
       - key: DB_URL
-        value: jdbc:mysql://mysql-1ac520ec-cd6388881581-67e5.g.aivencloud.com:24809/defaultdb?sslmode=REQUIRED
+        value: jdbc:mysql://mysql-1ac520ec-cd6388881581-67e5.g.aivencloud.com:24809/defaultdb?sslmode=REQUIRED&useUnicode=true&characterEncoding=UTF-8&useSSL=true&requireSSL=true&verifyServerCertificate=false&useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=250&prepStmtCacheSqlLimit=2048&connectTimeout=10000&socketTimeout=30000
       - key: DB_USERNAME
         value: avnadmin
       - key: DB_PASSWORD
@@ -22,3 +22,4 @@ services:
         value: "86400000"
       - key: FRONTEND_URL
         value: https://jobtrack-frontend-inky.vercel.app
+
