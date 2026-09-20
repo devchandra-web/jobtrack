@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import api from '../api/axios';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -13,6 +14,11 @@ const Login = () => {
   const location = useLocation();
 
   const from = location.state?.from?.pathname || '/';
+
+  useEffect(() => {
+    // Pre-wake backend container as soon as Login page opens
+    api.get('/health').catch(() => {});
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,15 +46,15 @@ const Login = () => {
       console.error('Login error', err);
       let msg = 'Invalid credentials or connection error.';
       if (err.response?.data) {
-        if (err.response.data.errors && typeof err.response.data.errors === 'object') {
-          msg = Object.values(err.response.data.errors).join('. ');
-        } else if (err.response.data.message) {
+        if (err.response.data.message) {
           msg = err.response.data.message;
+        } else if (err.response.data.errors && typeof err.response.data.errors === 'object') {
+          msg = Object.values(err.response.data.errors).join('. ');
         } else if (err.response.data.error) {
           msg = err.response.data.error;
         }
-      } else if (err.message && (err.message.includes('Network Error') || err.message.includes('timeout'))) {
-        msg = 'Unable to connect to the backend API server. Please check your backend deployment status.';
+      } else if (err.message && (err.message.includes('Network Error') || err.message.includes('timeout') || err.code === 'ECONNABORTED')) {
+        msg = 'The backend server is waking up (Render free-tier cold start). Please wait 5 seconds and click Sign In again!';
       } else if (err.message) {
         msg = err.message;
       }

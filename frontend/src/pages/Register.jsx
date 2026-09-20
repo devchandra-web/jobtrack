@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import api from '../api/axios';
 
 const getInitialFormState = () => ({
   fullName: '',
@@ -25,6 +26,9 @@ const Register = () => {
   useEffect(() => {
     setFormData(getInitialFormState());
     setError('');
+
+    // Pre-wake backend container as soon as Register page opens
+    api.get('/health').catch(() => {});
   }, []);
 
   const handleChange = (e) => {
@@ -84,14 +88,14 @@ const Register = () => {
       console.error('Registration error', err);
       let msg = 'Registration failed. Please try again.';
       if (err.response?.data) {
-        if (err.response.data.errors && typeof err.response.data.errors === 'object') {
-          msg = Object.values(err.response.data.errors).join('. ');
-        } else if (err.response.data.message) {
+        if (err.response.data.message) {
           msg = err.response.data.message;
+        } else if (err.response.data.errors && typeof err.response.data.errors === 'object') {
+          msg = Object.values(err.response.data.errors).join('. ');
         } else if (err.response.data.error) {
           msg = err.response.data.error;
         }
-      } else if (err.message && (err.message.includes('Network Error') || err.message.includes('timeout'))) {
+      } else if (err.message && (err.message.includes('Network Error') || err.message.includes('timeout') || err.code === 'ECONNABORTED')) {
         msg = 'The backend server is waking up (Render free-tier cold start). Please wait 5 seconds and click Create Account again!';
       } else if (err.message) {
         msg = err.message;
