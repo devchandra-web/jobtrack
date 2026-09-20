@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: jobtrack-backend
+    env: java
+    region: singapore
+    plan: free
+    rootDir: backend
+    buildCommand: mvn clean package -DskipTests
+    startCommand: java -jar target/backend-1.0.0.jar
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: DB_URL
+        value: jdbc:mysql://mysql-1ac520ec-cd6388881581-67e5.g.aivencloud.com:24809/defaultdb?sslmode=REQUIRED
+      - key: DB_USERNAME
+        value: avnadmin
+      - key: DB_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRATION_MS
+        value: "86400000"
+      - key: FRONTEND_URL
+        value: https://jobtrack-frontend-inky.vercel.app
