@@ -1,12 +1,11 @@
 services:
   - type: web
     name: jobtrack-backend
-    env: java
+    env: docker
+    rootDir: backend
+    dockerfilePath: Dockerfile
     region: singapore
     plan: free
-    rootDir: backend
-    buildCommand: mvn clean package -DskipTests
-    startCommand: java -jar target/backend-1.0.0.jar
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: prod
@@ -22,4 +21,3 @@ services:
         value: "86400000"
       - key: FRONTEND_URL
         value: https://jobtrack-frontend-inky.vercel.app
-

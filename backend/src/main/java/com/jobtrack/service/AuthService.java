@@ -81,12 +81,19 @@ public class AuthService {
 
         // If registering as a recruiter, create profile
         if (registerRequest.getRole() == Role.RECRUITER) {
+            String compName = (registerRequest.getCompanyName() != null && !registerRequest.getCompanyName().trim().isEmpty())
+                    ? registerRequest.getCompanyName().trim()
+                    : savedUser.getFullName() + "'s Company";
+            String loc = (registerRequest.getLocation() != null && !registerRequest.getLocation().trim().isEmpty())
+                    ? registerRequest.getLocation().trim()
+                    : "Remote / Hybrid";
+
             RecruiterProfile profile = RecruiterProfile.builder()
                     .user(savedUser)
-                    .companyName(registerRequest.getCompanyName() != null ? registerRequest.getCompanyName().trim() : savedUser.getFullName() + "'s Company")
+                    .companyName(compName)
                     .companyDescription(registerRequest.getCompanyDescription())
                     .companyWebsite(registerRequest.getCompanyWebsite())
-                    .location(registerRequest.getLocation() != null ? registerRequest.getLocation() : "Remote / Hybrid")
+                    .location(loc)
                     .build();
             recruiterProfileRepository.save(profile);
         }
